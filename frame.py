@@ -14,17 +14,24 @@ def extract_frames(vid_path: str, img_path: str):
         Returns:
 
     """
+    print("Starting to extract frames")
     frame_count = 0
     capture = cv2.VideoCapture(vid_path)
     frame_end = False
-    fps = capture.get(cv2.CAP_POP)
+    second_count = 0
+    fps = capture.get(cv2.CAP_PROP_FPS)
+    print(fps)
     while not frame_end:
         success, img = capture.read()
         if not success:
             continue
-        cv2.imwrite(f"{img_path}/frame_{frame_count:04d}.jpg", img)
+        if frame_count == int(fps * second_count):
+            print(f"Extracting frame: {frame_count}")
+            cv2.imwrite(f"{img_path}/frame_{frame_count:04d}.jpg", img)
+            second_count += 1
         frame_count += 1
-        if frame_count == capture.get(cv2.)
+        if frame_count == capture.get(cv2.CAP_PROP_FRAME_COUNT):
+            frame_end = True
 
 if __name__ == "__main__":
     a = argparse.ArgumentParser()
