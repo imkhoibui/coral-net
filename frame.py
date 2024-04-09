@@ -20,7 +20,6 @@ def extract_frames(vid_path: str, img_path: str):
     frame_end = False
     second_count = 0
     fps = capture.get(cv2.CAP_PROP_FPS)
-    print(fps)
     while not frame_end:
         success, img = capture.read()
         if not success:
