@@ -77,23 +77,34 @@ def get_labelset(url_list):
         for a in page_soup.find_all("a"):
             if a.get("href")[:6] == "/image":
                 first_image = int(a.get("href")[7:-6])
-                print(first_image)
+                # print(first_image)
                 break
 
         num_image = page_soup.find("div", {"class": "line"}).find("span").text
         num_image = int(num_image.split()[-1])
 
-        print(num_image)
-
+        # print(num_image)
         # Create a directory for the label
         os.makedirs(os.path.join("data/scraped_dataset/", title), exist_ok=True)
 
         # Download image
         for i in range(first_image, first_image + num_image):
-            image_soup = BeautifulSoup(source_link + f"image/{i}/view/")
-            image_url = image_soup.find_all("img").get("href")
-            r = requests.get(image_url, allow_redirects=True)
+            print("Downloading image", i)
+
+            image_content = requests.get(source_link + f"/image/{i}/view/")
+            image_soup = BeautifulSoup(image_content.text, "html.parser")
+
+            if (image_soup.find_all("img") == []):
+                continue
+            image_url = image_soup.find_all("img")[0].get("src")
+
+            # print("Image_url is:", image_url)
+            image_content = requests.get(image_url, allow_redirects=True)
+            image_filename = os.path.join("data/scraped_dataset/", title, f"image_{i}.jpg")
             
+            # print(image_filename)
+            with open(image_filename, "wb") as f:
+                f.write(image_content.content)
 
         break
 
