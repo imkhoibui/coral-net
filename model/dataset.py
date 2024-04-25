@@ -6,6 +6,8 @@ from torch.utils.data import Dataset, DataLoader
 from PIL import Image
 from pycocotools.coco import COCO
 
+from utils import resize_annotation
+
 class CoralDataset(Dataset):
     def __init__(self, root, annotation, transforms=None):
         super(Dataset, self).__init__()
@@ -32,6 +34,8 @@ class CoralDataset(Dataset):
             ymin = target[i]['bbox'][1]
             xmax = xmin + target[i]['bbox'][2]
             ymax = ymin + target[i]['bbox'][3]
+            original_boxes = xmin, ymin, xmax, ymax
+            xmin, ymin, xmax, ymax = resize_annotation(original_boxes, (640, 640), (224, 224))
             boxes.append([xmin, ymin, xmax, ymax])
         
         boxes = torch.as_tensor(boxes, dtype=torch.float32)
@@ -53,8 +57,6 @@ class CoralDataset(Dataset):
 
         if self.transforms is not None:
             img = self.transforms(img)
-        
-        # print(annotation)
 
         return img, annotation
     def __len__(self):
