@@ -1,1 +1,4 @@
-data
+data/
+pretrained/fastrcnn.py
+imagenet_classes.txt
+plotted/

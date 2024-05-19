@@ -17,8 +17,7 @@ loader_train = DataLoader(dataset_train,
                           batch_size=cfg.BATCH_SIZE, shuffle=True, collate_fn=collate_fn)
 loader_val = DataLoader(dataset_val, batch_size=cfg.BATCH_SIZE, shuffle=True, collate_fn=collate_fn)
 
-# Loading densenet pre-trained model
-
+# Loading FastRNCC pre-trained model
 def get_model_instance_segmentation(num_classes):
     model = torchvision.models.detection.fasterrcnn_resnet50_fpn(pretrained=False)
     in_features = model.roi_heads.box_predictor.cls_score.in_features

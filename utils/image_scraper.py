@@ -4,6 +4,7 @@ import requests
 import os 
 
 from bs4 import BeautifulSoup
+import psycopg2
 
 def _get_corals(data_file):
     """
@@ -68,7 +69,6 @@ def get_labelset(url_list):
         label_content = requests.get(source_link + link + "browse/images/")
 
         page_soup = BeautifulSoup(label_content.text, "html.parser")
-
         title = page_soup.find("h2").find("a").text
 
         first_image = 0
@@ -100,6 +100,41 @@ def get_labelset(url_list):
 
             # print("Image_url is:", image_url)
             image_content = requests.get(image_url, allow_redirects=True)
+            # ...
+
+            def write_image_to_database(image_content, image_filename):
+                conn = psycopg2.connect(
+                    host="your_host",
+                    database="your_database",
+                    user="your_user",
+                    password="your_password"
+                )
+                cur = conn.cursor()
+
+                with open(image_filename, "rb") as f:
+                    binary_data = f.read()
+
+                cur.execute("INSERT INTO images (filename, content) VALUES (%s, %s)", (image_filename, binary_data))
+                conn.commit()
+
+                cur.close()
+                conn.close()
+
+            # ...
+
+            def get_labelset(url_list):
+                # ...
+
+                for i in range(first_image, first_image + num_image):
+                    # ...
+
+                    with open(image_filename, "wb") as f:
+                        f.write(image_content.content)
+
+                    write_image_to_database(image_content.content, image_filename)
+
+                # ...
+
             image_filename = os.path.join("data/scraped_dataset/", title, f"image_{i}.jpg")
             
             # print(image_filename)
